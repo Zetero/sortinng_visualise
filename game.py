@@ -67,7 +67,7 @@ def BubbleSort(unsorted_array, j):
         step = -1
     
     print(j)
-    winsound.Beep(int(sort_array[j]) * 32, 400)
+    #(winsound.Beep(int(sort_array[j]) * + 37, 400)
     comparisions += 1
     red_column = j
 
