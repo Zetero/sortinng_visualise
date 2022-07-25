@@ -11,6 +11,8 @@ FPS = 60
 array = []
 sorted = False
 red_column = 0
+step = -1
+max_step = 126
 
 # size_screen
 screen_width =  1300 # 1024 for column size = 2, size_array = 256
@@ -46,16 +48,17 @@ def Randomize():
         array[index], array[second_index] = array[second_index], array[index]
     return array
 
-def BubbleSort(unsorted_array):
+def BubbleSort(unsorted_array, j):
     sort_array = unsorted_array 
-    for i in range(len(sort_array) - 1):
-        for j in range(len(sort_array) - 1 - i):
-            if sort_array[j] > sort_array[j + 1]:
-                sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
-                
-                global red_column
-                red_column = j
-                break
+    if sort_array[j] > sort_array[j + 1]:
+        sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
+        global step, max_step
+
+    if step >= max_step:
+        max_step -= 1
+        step = -1
+    global red_column
+    red_column = j
 
 def DrawColumns(drawed_array):
     global column_group
@@ -83,6 +86,13 @@ while game_running:
     clock.tick(FPS)
 
     screen.fill((0, 0, 0))
+    if(max_step != 0):
+        print(max_step)
+        print(step)
+        step += 1
+        BubbleSort(array, step)
+        sleep(0.004)
+        DrawColumns(array)
 
     column_group.draw(screen)
     column_group.update()
@@ -92,8 +102,7 @@ while game_running:
             game_running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
-                BubbleSort(array)
-                DrawColumns(array)
+                pass
 
     pygame.display.update()
 
