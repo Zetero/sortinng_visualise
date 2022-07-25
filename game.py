@@ -2,10 +2,15 @@ import random
 from time import sleep
 import pygame
 import pygame.locals
+import winsound
 
 # update_setting
 clock = pygame.time.Clock()
 FPS = 60
+
+# init's
+pygame.init()
+pygame.font.init()
 
 # define variables
 array = []
@@ -13,6 +18,12 @@ sorted = False
 red_column = 0
 step = -1
 max_step = 126
+comparisions = 0
+array_accesses = 0
+
+# define font
+WHITE = (255, 255, 255)
+sys_font = pygame.font.SysFont("Fixedsys", 30)
 
 # size_screen
 screen_width =  1300 # 1024 for column size = 2, size_array = 256
@@ -30,10 +41,6 @@ class Column(pygame.sprite.Sprite):
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.rect.bottomleft = [x, y]
-    
-    def update(self):
-        pass
-        #self.rect.y += 1
 
 # define group
 column_group = pygame.sprite.Group()
@@ -50,14 +57,18 @@ def Randomize():
 
 def BubbleSort(unsorted_array, j):
     sort_array = unsorted_array 
+    global step, max_step, comparisions, array_accesses, red_column
     if sort_array[j] > sort_array[j + 1]:
         sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
-        global step, max_step
+        array_accesses += 1
 
     if step >= max_step:
         max_step -= 1
         step = -1
-    global red_column
+    
+    print(j)
+    winsound.Beep(int(sort_array[j]) * 32, 400)
+    comparisions += 1
     red_column = j
 
 def DrawColumns(drawed_array):
@@ -81,17 +92,26 @@ array = Randomize()
 DrawColumns(array)
 
 game_running = True
+
 while game_running:
 
     clock.tick(FPS)
 
     screen.fill((0, 0, 0))
+
+    comparision_text = sys_font.render(f"Comparisions: {comparisions}", True, WHITE)
+    screen.blit(comparision_text, (10, 10))
+    array_accesses_text = sys_font.render(f"Array accesses: {array_accesses}", True, WHITE)
+    screen.blit(array_accesses_text, (550, 10))
+    delay_text = sys_font.render("Delay: 4 ms", True, WHITE)
+    screen.blit(delay_text, (1170, 10))
+
     if(max_step != 0):
         print(max_step)
         print(step)
         step += 1
         BubbleSort(array, step)
-        sleep(0.004)
+        #sleep(0.004)
         DrawColumns(array)
 
     column_group.draw(screen)
