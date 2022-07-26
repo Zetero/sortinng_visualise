@@ -1,5 +1,4 @@
 import random
-from time import sleep
 array = []
 
 def Randomize():
