@@ -37,6 +37,15 @@ def ShakerSort():
         left += 1
     print(sort_array)
 
+def InsertionSort():
+    sort_array = Randomize()
+    for i in range(1, len(sort_array), +1):
+        key = sort_array[i]
+        j = i - 1
+        while j > 0 and sort_array[j] < key:
+            sort_array[j + 1] = sort_array[j]
+            j -= 1
+        sort_array[j + 1] = key
 
 if __name__ == "__main__":
     ShakerSort()

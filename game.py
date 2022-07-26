@@ -1,16 +1,11 @@
-from asyncio import start_server
-from cgitb import text
 import random
-from time import sleep
-from tokenize import group
-from tracemalloc import start
 import pygame
 import pygame.locals
 from enum import Enum
 
 # update_setting
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 240
 
 # init's
 pygame.init()
@@ -22,8 +17,8 @@ BLACK = (0, 0, 0)
 sys_font = pygame.font.SysFont("Fixedsys", 30)
 
 # size_screen
-screen_width =  1300 # 1024 for column size = 2, size_array = 256
-screen_height = 700 # 256 for height column
+screen_width =  1300
+screen_height = 700 
 
 # screen_settings
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -33,6 +28,7 @@ pygame.display.set_caption("Brick Ball Game")
 class SortingFunctions(Enum):
     BubbleSort = 1
     ShakerSort = 2
+    InsertionSort = 3
 
 # class Column
 class Column(pygame.sprite.Sprite):
@@ -71,7 +67,8 @@ def BubbleSort(unsorted_array):
     sort_array = unsorted_array
 
     global sorted, comparisions, array_accesses, start_sort
-
+    comparisions = 0
+    array_accesses = 0
     for i in range(len(sort_array) - 1):
         for j in range(len(sort_array) - 1 - i):
             if sorted == True:
@@ -92,6 +89,8 @@ def ShakerSort(unsorted_array):
     right = len(sort_array) - 1
 
     global sorted, array_accesses, comparisions, start_sort
+    comparisions = 0
+    array_accesses = 0
 
     while left <= right:
         for i in range(left, right, +1):
@@ -119,6 +118,30 @@ def ShakerSort(unsorted_array):
         left += 1
     sorted = True
 
+def InsertionSort(unsorted_array):
+    sort_array = unsorted_array
+
+    global sorted, array_accesses, comparisions, start_sort
+    comparisions = 0
+    array_accesses = 0
+
+    for i in range(1, len(sort_array), +1):
+        comparisions += 1
+        key = sort_array[i]
+        j = i - 1
+        while j >= 0 and sort_array[j] > key:
+            if sorted == True:
+                array_accesses = 0
+                comparisions = 0
+                break
+            sort_array[j + 1] = sort_array[j]
+            array_accesses += 1
+            j -= 1
+            DrawingScreen(sort_array, [j, j + 1])
+        sort_array[j + 1] = key
+
+    sorted = True
+
 def TextDraw():
     comparision_text = sys_font.render(f"Comparisions: {comparisions}", True, WHITE)
     screen.blit(comparision_text, (10, 10))
@@ -128,11 +151,15 @@ def TextDraw():
     screen.blit(delay_text, (1170, 10))
     sort_text = sys_font.render("Bubble Sort", True, BLACK)
     screen.blit(sort_text, (15, 626))
+    sort_text = sys_font.render("Shaker Sort", True, BLACK)
+    screen.blit(sort_text, (155, 626))
+    sort_text = sys_font.render("Insertion Sort", True, BLACK)
+    screen.blit(sort_text, (290, 626))
 
 def DrawingScreen(drawed_array, red_array):
     clock.tick(FPS)
     screen.fill((0, 0, 0))
-    global column_group, button_group, array, game_running, sorted, selected_sort, start_sort
+    global column_group, button_group, array, game_running, sorted, selected_sort, start_sort, checked
     column_group = pygame.sprite.Group()
     offset = 0
     index = 0
@@ -157,20 +184,27 @@ def DrawingScreen(drawed_array, red_array):
             game_running = False
         if event.type == pygame.MOUSEBUTTONDOWN: 
             if button_group.sprites()[0].rect.collidepoint(pygame.mouse.get_pos()) and sorted == True:
+                array = Randomize()
                 selected_sort = SortingFunctions.BubbleSort
                 sorted = False
             elif button_group.sprites()[0].rect.collidepoint(pygame.mouse.get_pos()) and sorted == False:
                 selected_sort = SortingFunctions.BubbleSort
-                array = Randomize()
-                print(len(array))
                 sorted = True
             
             if button_group.sprites()[1].rect.collidepoint(pygame.mouse.get_pos()) and sorted == True:
+                array = Randomize()
                 selected_sort = SortingFunctions.ShakerSort
                 sorted = False
             elif button_group.sprites()[1].rect.collidepoint(pygame.mouse.get_pos()) and sorted == False:
                 selected_sort = SortingFunctions.ShakerSort
+                sorted = True
+
+            if button_group.sprites()[2].rect.collidepoint(pygame.mouse.get_pos()) and sorted == True:
                 array = Randomize()
+                selected_sort = SortingFunctions.InsertionSort
+                sorted = False
+            elif button_group.sprites()[2].rect.collidepoint(pygame.mouse.get_pos()) and sorted == False:
+                selected_sort = SortingFunctions.InsertionSort
                 sorted = True
 
     TextDraw()
@@ -184,11 +218,13 @@ sorted = True
 array_accesses = 0
 selected_sort = 'none'
 array = Randomize()
+checked = False
 
 # start program
 game_running = True
 button_group.add(Button(10, 650, 128, 30))
 button_group.add(Button(148, 650, 128, 30))
+button_group.add(Button(282, 650, 148, 30))
 #button_group.add(Button(10, 690, 100, 30, "Shaker Sort"))
 
 while game_running:
@@ -196,6 +232,8 @@ while game_running:
         BubbleSort(array)
     elif selected_sort == SortingFunctions.ShakerSort and sorted == False:
         ShakerSort(array)
+    elif selected_sort == SortingFunctions.InsertionSort and sorted == False:
+        InsertionSort(array)
     else:
         DrawingScreen(array, [0,127])
 
