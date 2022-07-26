@@ -2,7 +2,7 @@ import random
 from time import sleep
 import pygame
 import pygame.locals
-import winsound
+from enum import Enum
 
 # update_setting
 clock = pygame.time.Clock()
@@ -11,15 +11,6 @@ FPS = 60
 # init's
 pygame.init()
 pygame.font.init()
-
-# define variables
-array = []
-sorted = False
-red_column = 0
-step = -1
-max_step = 126
-comparisions = 0
-array_accesses = 0
 
 # define font
 WHITE = (255, 255, 255)
@@ -32,6 +23,10 @@ screen_height = 700 # 256 for height column
 # screen_settings
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Brick Ball Game")
+
+# enum of sorting functions
+class Sorting_Functions(Enum):
+    BubbleSort = 1
 
 # class Column
 class Column(pygame.sprite.Sprite):
@@ -87,12 +82,20 @@ def DrawColumns(drawed_array):
         offset += 10
         index += 1
 
-
+# define variables
+array = []
+sorted = False
+red_column = 0
+step = -1
+max_step = 126
+comparisions = 0
+array_accesses = 0
+selected_sort = Sorting_Functions.BubbleSort
 array = Randomize()
+
+# first drawing and start programm
 DrawColumns(array)
-
 game_running = True
-
 while game_running:
 
     clock.tick(FPS)
@@ -106,7 +109,9 @@ while game_running:
     delay_text = sys_font.render("Delay: 4 ms", True, WHITE)
     screen.blit(delay_text, (1170, 10))
 
-    if(max_step != 0):
+    DrawColumns(array)
+
+    if max_step != 0 and selected_sort == 2:
         print(max_step)
         print(step)
         step += 1
