@@ -117,7 +117,6 @@ def ShakerSort(unsorted_array):
             comparisions += 1
             
         left += 1
-    start_sort = False
     sorted = True
 
 def TextDraw():
