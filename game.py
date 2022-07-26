@@ -29,7 +29,7 @@ class SortingFunctions(Enum):
     BubbleSort = 1
     ShakerSort = 2
     InsertionSort = 3
-    ModBubbleSort = 3
+    ModBubbleSort = 4
 
 # class Column
 class Column(pygame.sprite.Sprite):
@@ -162,8 +162,9 @@ def ModBubbleSort(unsorted_array):
     global sorted, comparisions, array_accesses
     comparisions = 0
     array_accesses = 0
-    for i in range(0 ,len(sort_array) - 1, +1):
-        for j in range(1, len(sort_array) - 1 - i, +1):
+    print(int(len(sort_array) / 2))
+    for i in range(0 ,(int(len(sort_array) / 2) - 1), +1):
+        for j in range(1, len(sort_array) - 1 - i * 2, +1):
             if sorted == True:
                 comparisions = 0
                 array_accesses = 0
@@ -176,7 +177,7 @@ def ModBubbleSort(unsorted_array):
                 sort_array[j], sort_array[j - 1] = sort_array[j - 1], sort_array[j]
                 comparisions += 1
                 array_accesses += 1
-                DrawingScreen(sort_array, [j, j + 1, j - 1])
+            DrawingScreen(sort_array, [j, j + 1, j - 1])
             array_accesses += 1
         array_accesses += 1
     CheckArray(array)
@@ -240,7 +241,7 @@ def DrawingScreen(drawed_array, red_array):
             elif button_group.sprites()[1].rect.collidepoint(pygame.mouse.get_pos()) and sorted == False:
                 selected_sort = SortingFunctions.ShakerSort
                 sorted = True
-
+            
             if button_group.sprites()[2].rect.collidepoint(pygame.mouse.get_pos()) and sorted == True:
                 array = Randomize()
                 selected_sort = SortingFunctions.InsertionSort
@@ -248,7 +249,7 @@ def DrawingScreen(drawed_array, red_array):
             elif button_group.sprites()[2].rect.collidepoint(pygame.mouse.get_pos()) and sorted == False:
                 selected_sort = SortingFunctions.InsertionSort
                 sorted = True
-
+            
             if button_group.sprites()[3].rect.collidepoint(pygame.mouse.get_pos()) and sorted == True:
                 array = Randomize()
                 selected_sort = SortingFunctions.ModBubbleSort
@@ -275,7 +276,8 @@ game_running = True
 button_group.add(Button(10, 650, 128, 30))
 button_group.add(Button(148, 650, 128, 30))
 button_group.add(Button(282, 650, 148, 30))
-button_group.add(Button(436, 650, 170, 30))
+button_group.add(Button(436, 650, 470, 30))
+#button_group.add(Button(436, 650, 170, 30))
 #button_group.add(Button(10, 690, 100, 30, "Shaker Sort"))
 
 while game_running:

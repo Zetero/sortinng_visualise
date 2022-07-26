@@ -1,4 +1,5 @@
 import random
+import time
 array = []
 
 def Randomize():
@@ -10,14 +11,29 @@ def Randomize():
         array[index], array[second_index] = array[second_index], array[index]
     return array
 
-def BubbleSort():
-    sort_array = Randomize()
-    print(sort_array)
+def BubbleSort(new_array):
+    start_time = time.time()
+
+    sort_array = new_array
     for i in range(len(sort_array) - 1):
         for j in range(len(sort_array) - 1 - i):
             if sort_array[j] > sort_array[j + 1]:
                 sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
-    print(sort_array)
+    
+    print(f"Elapsed time: {abs(start_time - time.time())} sec")
+
+def ModBubbleSort(new_array):
+    start_time = time.time()
+
+    sort_array = new_array
+    for i in range(0 , int(len(sort_array) / 2) - 1, +1):
+        for j in range(1, len(sort_array) - 1 - i * 2, +1):
+            if sort_array[j] > sort_array[j + 1]:
+                sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
+            if sort_array[j] < sort_array[j - 1]:
+                sort_array[j], sort_array[j - 1] = sort_array[j - 1], sort_array[j]
+
+    print(f"Elapsed time: {abs(start_time - time.time())} sec")
 
 def ShakerSort():
     sort_array = Randomize()
@@ -47,5 +63,10 @@ def InsertionSort():
         sort_array[j + 1] = key
 
 if __name__ == "__main__":
-    ShakerSort()
+    first_array = Randomize()
+    print("--bubble sort--")
+    BubbleSort(first_array.copy())
+    print("--mod bubble sort--")
+    ModBubbleSort(first_array.copy())
+
     
