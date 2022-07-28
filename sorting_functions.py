@@ -1,5 +1,6 @@
 from array import ArrayType
 import random
+from ssl import SSL_ERROR_WANT_READ
 from subprocess import HIGH_PRIORITY_CLASS
 import time
 
@@ -8,42 +9,34 @@ array = []
 
 def Randomize():
     for i in range(128):
-        array.append((i + 1) * 2)
+        array.append(i + 1)
     for i in range(128):
-        #index = random.randint(0, 4999)
-        #second_index = random.randint(0, 4999)
-        #array[index], array[second_index] = array[second_index], array[index]
-        pass
+        index = random.randint(0, 127)
+        second_index = random.randint(0, 127)
+        array[index], array[second_index] = array[second_index], array[index]
     print(array)
     return array
 
-def BubbleSort(new_array):
-    start_time = time.time()
-
-    sort_array = new_array
+def BubbleSort():
+    sort_array = Randomize()
     for i in range(len(sort_array) - 1):
         for j in range(len(sort_array) - 1 - i):
             if sort_array[j] > sort_array[j + 1]:
                 sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
-    
-    print(f"Elapsed time: {abs(start_time - time.time())} sec")
+    print(sort_array)
 
-def ModBubbleSort(new_array):
-    start_time = time.time()
-
-    sort_array = new_array
+def ModBubbleSort():
+    sort_array = Randomize()
     for i in range(0 , int(len(sort_array) / 2) - 1, +1):
         for j in range(1, len(sort_array) - 1 - i * 2, +1):
             if sort_array[j] > sort_array[j + 1]:
                 sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
             if sort_array[j] < sort_array[j - 1]:
                 sort_array[j], sort_array[j - 1] = sort_array[j - 1], sort_array[j]
-
-    print(f"Elapsed time: {abs(start_time - time.time())} sec")
+    print(sort_array)
 
 def ShakerSort():
     sort_array = Randomize()
-    print(sort_array)
     left = 0
     right = len(sort_array) - 1
     while left <= right:
@@ -67,6 +60,7 @@ def InsertionSort():
             sort_array[j + 1] = sort_array[j]
             j -= 1
         sort_array[j + 1] = key
+    print(sort_array)
 
 def BinarySearch(s_array, n):
     low = 0
@@ -83,7 +77,26 @@ def BinarySearch(s_array, n):
 
     return -1
 
+def QuickSort(unsorted_array):
+    if unsorted_array == []:
+        return unsorted_array
+    low = 0
+    high = len(unsorted_array) - 1
+    mid = (low + high) // 2
+    if unsorted_array[mid] < unsorted_array[low]:
+        unsorted_array[mid], unsorted_array[low] = unsorted_array[low], unsorted_array[mid]
+    if unsorted_array[high] < unsorted_array[low]:
+        unsorted_array[high], unsorted_array[low] = unsorted_array[low], unsorted_array[high]
+    if unsorted_array[high] < unsorted_array[mid]:
+        unsorted_array[high], unsorted_array[mid] = unsorted_array[mid], unsorted_array[high]
+    pivot = unsorted_array.pop(mid)
+    l_unsort_array = list(filter(lambda x: x <= pivot, unsorted_array))
+    r_unsort_array = list(filter(lambda x: x > pivot, unsorted_array))
+    return list(QuickSort(l_unsort_array) + [pivot] + QuickSort(r_unsort_array))
+    
+
 if __name__ == "__main__":
-    print(BinarySearch(Randomize(), 5))
+    asd = QuickSort(Randomize())
+    print(asd)
 
     

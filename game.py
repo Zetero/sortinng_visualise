@@ -1,3 +1,4 @@
+from contextlib import redirect_stderr
 import random
 import pygame
 import pygame.locals
@@ -30,6 +31,7 @@ class SortingFunctions(Enum):
     ShakerSort = 2
     InsertionSort = 3
     ModBubbleSort = 4
+    QuickSort = 5
 
 # class Column
 class Column(pygame.sprite.Sprite):
@@ -59,7 +61,7 @@ def CheckArray(unsorted_array):
     checked = []
     for i in range(len(sort_array) - 1):
         checked.append(i)
-        DrawingScreen(sort_array, checked)
+        DrawingScreen(sort_array, [i], checked[:-1])
 
 def Randomize():
     new_array = []
@@ -83,121 +85,105 @@ def BinarySearch(sorted_array, elem, low, high):
             low = mid + 1
         else:
             high = mid - 1
+        DrawingScreen(sorted_array, [elem], [mid])
     return low
 
 def BubbleSort(unsorted_array):
-    sort_array = unsorted_array
+    global sorted
 
-    global sorted, comparisions, array_accesses
-    comparisions = 0
-    array_accesses = 0
-    for i in range(len(sort_array) - 1):
-        for j in range(len(sort_array) - 1 - i):
+    for i in range(len(unsorted_array) - 1):
+        for j in range(len(unsorted_array) - 1 - i):
             if sorted == True:
-                comparisions = 0
-                array_accesses = 0
                 break
-            if sort_array[j] > sort_array[j + 1]:
-                sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
-                comparisions +=1
-                array_accesses += 1
-                DrawingScreen(sort_array, [j, j + 1])
-            array_accesses += 1
-        array_accesses += 1
+            if unsorted_array[j] > unsorted_array[j + 1]:
+                unsorted_array[j], unsorted_array[j + 1] = unsorted_array[j + 1], unsorted_array[j]
+                DrawingScreen(unsorted_array, [j], [j + 1])
     CheckArray(array)
     sorted = True
 
 def ShakerSort(unsorted_array):
-    sort_array = unsorted_array
     left = 0
-    right = len(sort_array) - 1
+    right = len(unsorted_array) - 1
 
-    global sorted, array_accesses, comparisions
-    comparisions = 0
-    array_accesses = 0
+    global sorted
 
     while left <= right:
         for i in range(left, right, +1):
             if sorted == True:
-                comparisions = 0
-                array_accesses = 0
                 break
-            if sort_array[i] > sort_array[i + 1]:
-                sort_array[i], sort_array[i + 1] = sort_array[i + 1], sort_array[i]
-                DrawingScreen(sort_array, [i, i + 1])
-                comparisions += 1
-                array_accesses += 1
-            array_accesses += 1
+            if unsorted_array[i] > unsorted_array[i + 1]:
+                unsorted_array[i], unsorted_array[i + 1] = unsorted_array[i + 1], unsorted_array[i]
+                DrawingScreen(unsorted_array, [i], [i + 1])
         right -= 1
         for i in range(right, left, -1):
             if sorted == True:
-                array_accesses = 0
-                comparisions = 0
                 break
-            if sort_array[i] < sort_array[i - 1]:
-                sort_array[i], sort_array[i - 1] = sort_array[i - 1], sort_array[i]
-                array_accesses += 1
-                DrawingScreen(sort_array, [i, i - 1])
-                comparisions += 1
-                array_accesses += 1
-            array_accesses += 1
-        array_accesses += 1
+            if unsorted_array[i] < unsorted_array[i - 1]:
+                unsorted_array[i], unsorted_array[i - 1] = unsorted_array[i - 1], unsorted_array[i]
+                DrawingScreen(unsorted_array, [i], [i - 1])
         left += 1
     CheckArray(array)
     sorted = True
 
 def InsertionSort(unsorted_array):
-    sort_array = unsorted_array
+    global sorted
 
-    global sorted, array_accesses, comparisions
-    comparisions = 0
-    array_accesses = 0
-
-    for i in range(1, len(sort_array)):
+    for i in range(1, len(unsorted_array)):
+        if sorted == True:
+            break
         j = i - 1
-        key = sort_array[i]
-        loc = BinarySearch(sort_array, key, 0, j)
+        key = unsorted_array[i]
+        loc = BinarySearch(unsorted_array, key, 0, j)
         while(j >= loc):
-            sort_array[j + 1] = sort_array[j]
+            unsorted_array[j + 1] = unsorted_array[j]
             j -= 1
-            DrawingScreen(sort_array, [j])
-        sort_array[j + 1] = key
+            DrawingScreen(unsorted_array, [j], [loc])
+        unsorted_array[j + 1] = key
     CheckArray(array)
     sorted = True
 
 def ModBubbleSort(unsorted_array):
     sort_array = unsorted_array
-    global sorted, comparisions, array_accesses
-    comparisions = 0
-    array_accesses = 0
-    print(int(len(sort_array) / 2))
+
+    global sorted
+
     for i in range(0 ,(int(len(sort_array) / 2) - 1), +1):
         for j in range(1, len(sort_array) - 1 - i * 2, +1):
             if sorted == True:
-                comparisions = 0
-                array_accesses = 0
                 break
             if sort_array[j] > sort_array[j + 1]:
                 sort_array[j], sort_array[j + 1] = sort_array[j + 1], sort_array[j]
-                comparisions += 1
-                array_accesses += 1
             if sort_array[j] < sort_array[j - 1]:
                 sort_array[j], sort_array[j - 1] = sort_array[j - 1], sort_array[j]
-                comparisions += 1
-                array_accesses += 1
-            DrawingScreen(sort_array, [j, j + 1, j - 1])
-            array_accesses += 1
-        array_accesses += 1
+            DrawingScreen(sort_array, [j], [j + 1, j - 1])
     CheckArray(array)
     sorted = True
 
+def QuickSort(unsorted_array):
+
+    global sorted
+    
+    if unsorted_array == []:
+        #CheckArray(unsorted_array)
+        sorted = True
+        return unsorted_array
+    low = 0
+    high = len(unsorted_array) - 1
+    mid = (low + high) // 2
+    if unsorted_array[mid] < unsorted_array[low]:
+        unsorted_array[mid], unsorted_array[low] = unsorted_array[low], unsorted_array[mid]
+    if unsorted_array[high] < unsorted_array[low]:
+        unsorted_array[high], unsorted_array[low] = unsorted_array[low], unsorted_array[high]
+    if unsorted_array[high] < unsorted_array[mid]:
+        unsorted_array[high], unsorted_array[mid] = unsorted_array[mid], unsorted_array[high]
+    pivot = unsorted_array.pop(mid)
+    l_unsort_array = list(filter(lambda x: x <= pivot, unsorted_array))
+    r_unsort_array = list(filter(lambda x: x > pivot, unsorted_array))
+    DrawingScreen(unsorted_array, [pivot], [list(l_unsort_array + r_unsort_array)])
+    #print(l_unsort_array + [pivot] + r_unsort_array)
+    return list(QuickSort(l_unsort_array) + [pivot] + QuickSort(r_unsort_array))
+
 def TextDraw():
-    comparision_text = sys_font.render(f"Comparisions: {comparisions}", True, WHITE)
-    screen.blit(comparision_text, (10, 10))
-    array_accesses_text = sys_font.render(f"Array accesses: {array_accesses}", True, WHITE)
-    screen.blit(array_accesses_text, (650, 10))
-    delay_text = sys_font.render("Delay: 4 ms", True, WHITE)
-    screen.blit(delay_text, (1370, 10))
     sort_text = sys_font.render("Bubble Sort", True, BLACK)
     screen.blit(sort_text, (15, 626))
     sort_text = sys_font.render("Shaker Sort", True, BLACK)
@@ -206,8 +192,10 @@ def TextDraw():
     screen.blit(sort_text, (290, 626))
     sort_text = sys_font.render("Mod Bubble Sort", True, BLACK)
     screen.blit(sort_text, (512, 626))
+    sort_text = sys_font.render("Quick sort (mediana)", True, BLACK)
+    screen.blit(sort_text, (15, 666))
 
-def DrawingScreen(drawed_array, red_array):
+def DrawingScreen(drawed_array, red_array, green_array):
     clock.tick(FPS)
     screen.fill((0, 0, 0))
     global column_group, button_group, array, game_running, sorted, selected_sort, start_sort, checked
@@ -215,10 +203,12 @@ def DrawingScreen(drawed_array, red_array):
     offset = 0
     index = 0
     for elem in drawed_array:
-        if list(red_array).count(index) == 0 :
-            col = Column(offset + 45, screen_height - 100, 10, (elem + 1) * 4, (255, 255, 255))
-        else:
+        if list(green_array).count(index) > 0 :
+            col = Column(offset + 45, screen_height - 100, 10, (elem + 1) * 4, (0, 255, 0))
+        elif list(red_array).count(index) > 0 :
             col = Column(offset + 45, screen_height - 100, 10, (elem + 1) * 4, (255, 0, 0))
+        else:
+            col = Column(offset + 45, screen_height - 100, 10, (elem + 1) * 4, (255, 255, 255))
         column_group.add(col)
         offset += 11
         index += 1
@@ -266,15 +256,21 @@ def DrawingScreen(drawed_array, red_array):
                 selected_sort = SortingFunctions.ModBubbleSort
                 sorted = True
 
+            if button_group.sprites()[4].rect.collidepoint(pygame.mouse.get_pos()) and sorted == True:
+                array = Randomize()
+                selected_sort = SortingFunctions.QuickSort
+                sorted = False
+            elif button_group.sprites()[4].rect.collidepoint(pygame.mouse.get_pos()) and sorted == False:
+                selected_sort = SortingFunctions.QuickSort
+                sorted = True
+
     TextDraw()
     pygame.display.update()
 
 # define variables
 game_running = True
 array = []
-comparisions = 0
 sorted = True
-array_accesses = 0
 selected_sort = 'none'
 array = Randomize()
 checked = False
@@ -285,6 +281,7 @@ button_group.add(Button(10, 650, 128, 30))
 button_group.add(Button(148, 650, 128, 30))
 button_group.add(Button(282, 650, 220, 30))
 button_group.add(Button(508, 650, 170, 30))
+button_group.add(Button(10, 690, 215, 30))
 #button_group.add(Button(10, 690, 100, 30, "Shaker Sort"))
 
 while game_running:
@@ -296,8 +293,10 @@ while game_running:
         InsertionSort(array)
     elif selected_sort == SortingFunctions.ModBubbleSort and sorted == False:
         ModBubbleSort(array)
+    elif selected_sort == SortingFunctions.QuickSort and sorted == False:
+        QuickSort(array)
     else:
-        DrawingScreen(array, [0,127])
+        DrawingScreen(array, [127], [0])
 
 if __name__ == "__main__":
     game_running = True
