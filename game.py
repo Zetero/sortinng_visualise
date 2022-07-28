@@ -1,6 +1,4 @@
-from posixpath import supports_unicode_filenames
 import random
-from numpy import sort_complex
 import pygame
 import pygame.locals
 from enum import Enum
