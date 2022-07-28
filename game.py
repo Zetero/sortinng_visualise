@@ -1,4 +1,6 @@
+from posixpath import supports_unicode_filenames
 import random
+from numpy import sort_complex
 import pygame
 import pygame.locals
 from enum import Enum
@@ -66,10 +68,24 @@ def Randomize():
     for i in range(128):
         new_array.append(i + 1)
     for i in range(128):
+        # randomed array
         index = random.randint(0, len(new_array) - 1)
         second_index = random.randint(0, len(new_array) - 1)
         new_array[index], new_array[second_index] = new_array[second_index], new_array[index]
+        # sorted array
+        # new_array[i] = i
     return new_array
+
+def BinarySearch(sorted_array, elem, low, high):
+    while low <= high:
+        mid = (high + low) // 2
+        if elem == sorted_array[mid]:
+            return mid + 1
+        elif elem > sorted_array[mid]:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return low
 
 def BubbleSort(unsorted_array):
     sort_array = unsorted_array
@@ -139,20 +155,14 @@ def InsertionSort(unsorted_array):
     comparisions = 0
     array_accesses = 0
 
-    for i in range(1, len(sort_array), +1):
-        array_accesses += 1
-        key = sort_array[i]
+    for i in range(1, len(sort_array)):
         j = i - 1
-        while j >= 0 and sort_array[j] > key:
-            comparisions += 1
-            if sorted == True:
-                array_accesses = 0
-                comparisions = 0
-                break
+        key = sort_array[i]
+        loc = BinarySearch(sort_array, key, 0, j)
+        while(j >= loc):
             sort_array[j + 1] = sort_array[j]
-            array_accesses += 1
             j -= 1
-            DrawingScreen(sort_array, [j, j + 1])
+            DrawingScreen(sort_array, [j])
         sort_array[j + 1] = key
     CheckArray(array)
     sorted = True
@@ -194,10 +204,10 @@ def TextDraw():
     screen.blit(sort_text, (15, 626))
     sort_text = sys_font.render("Shaker Sort", True, BLACK)
     screen.blit(sort_text, (155, 626))
-    sort_text = sys_font.render("Insertion Sort", True, BLACK)
+    sort_text = sys_font.render("Binary Insertion Sort", True, BLACK)
     screen.blit(sort_text, (290, 626))
     sort_text = sys_font.render("Mod Bubble Sort", True, BLACK)
-    screen.blit(sort_text, (440, 626))
+    screen.blit(sort_text, (512, 626))
 
 def DrawingScreen(drawed_array, red_array):
     clock.tick(FPS)
@@ -275,9 +285,8 @@ checked = False
 game_running = True
 button_group.add(Button(10, 650, 128, 30))
 button_group.add(Button(148, 650, 128, 30))
-button_group.add(Button(282, 650, 148, 30))
-button_group.add(Button(436, 650, 470, 30))
-#button_group.add(Button(436, 650, 170, 30))
+button_group.add(Button(282, 650, 220, 30))
+button_group.add(Button(508, 650, 170, 30))
 #button_group.add(Button(10, 690, 100, 30, "Shaker Sort"))
 
 while game_running:

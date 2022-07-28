@@ -1,14 +1,20 @@
+from array import ArrayType
 import random
+from subprocess import HIGH_PRIORITY_CLASS
 import time
+
+from numpy import binary_repr
 array = []
 
 def Randomize():
     for i in range(128):
-        array.append(i + 1)
+        array.append((i + 1) * 2)
     for i in range(128):
-        index = random.randint(0, 127)
-        second_index = random.randint(0, 127)
-        array[index], array[second_index] = array[second_index], array[index]
+        #index = random.randint(0, 4999)
+        #second_index = random.randint(0, 4999)
+        #array[index], array[second_index] = array[second_index], array[index]
+        pass
+    print(array)
     return array
 
 def BubbleSort(new_array):
@@ -62,11 +68,22 @@ def InsertionSort():
             j -= 1
         sort_array[j + 1] = key
 
+def BinarySearch(s_array, n):
+    low = 0
+    high = len(s_array) - 1
+
+    while low <= high:
+        mid = (low + high) // 2
+        if s_array[mid] < n:
+            return mid
+        elif s_array[mid] > n:
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    return -1
+
 if __name__ == "__main__":
-    first_array = Randomize()
-    print("--bubble sort--")
-    BubbleSort(first_array.copy())
-    print("--mod bubble sort--")
-    ModBubbleSort(first_array.copy())
+    print(BinarySearch(Randomize(), 5))
 
     
